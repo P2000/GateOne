@@ -17,23 +17,24 @@ It was originally written by Alan Schmitz.
 
 The only non-obvious aspect of this module is that the pam_realm setting is only
 used when the user is asked to authenticate and when the user's information is
-store in the 'users' directory.  It isn't actually used in any part of the
+stored in the 'users' directory.  It isn't actually used in any part of the
 authentication (PAM doesn't take a "realm" setting).
 """
 
 # Standard library modules
-import httplib, logging, base64
+import base64
 
 # 3rd party modules
 import PAM
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
-from tornado.escape import utf8
-from tornado.util import b
 
 
 class PAMAuthMixin(tornado.web.RequestHandler):
+    """
+    This is used by PAMAuthHandler in auth.py to authenticate users via PAM.
+    """
     def initialize(self):
         """
         Print out helpful error messages if the requisite settings aren't
@@ -77,7 +78,7 @@ class PAMAuthMixin(tornado.web.RequestHandler):
         try:
             pam_auth.authenticate()
             pam_auth.acct_mgmt()
-        except Exception, e: # Basic auth failed
+        except Exception as e: # Basic auth failed
             if self.settings['debug']:
                 print(e) # Very useful for debugging Kerberos errors
             return self.authenticate_redirect()

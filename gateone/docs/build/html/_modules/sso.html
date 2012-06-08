@@ -3,18 +3,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>sso &mdash; Gate One v0.9 documentation</title>
+    <title>sso &mdash; Gate One 1.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/ansi.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.9',
+        VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +26,8 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Gate One v0.9 documentation" href="../index.html" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <link rel="top" title="Gate One 1.0 documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body>
@@ -47,6 +51,7 @@
           <div class="body">
             
   <h1>Source code for sso</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
 <span class="c">#</span>
 <span class="c">#       Copyright 2011 Liftoff Software Corporation</span>
 <span class="c">#</span>
@@ -111,20 +116,22 @@
 <span class="s">&quot;&quot;&quot;</span>
 
 <span class="c"># Standard library modules</span>
-<span class="kn">import</span> <span class="nn">httplib</span><span class="o">,</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+
+<span class="c"># Import our own stuff</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">get_translation</span>
+<span class="c"># Enable localization support</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">get_translation</span><span class="p">()</span>
 
 <span class="c"># 3rd party modules</span>
-<span class="kn">import</span> <span class="nn">kerberos</span>
 <span class="kn">import</span> <span class="nn">tornado.httpserver</span>
 <span class="kn">import</span> <span class="nn">tornado.ioloop</span>
 <span class="kn">import</span> <span class="nn">tornado.web</span>
-<span class="kn">from</span> <span class="nn">tornado.escape</span> <span class="kn">import</span> <span class="n">utf8</span>
-<span class="kn">from</span> <span class="nn">tornado.util</span> <span class="kn">import</span> <span class="n">b</span>
-<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">kerberos</span>
 
 <span class="c"># NOTE: For some reason if I set this as just an &#39;object&#39; it doesn&#39;t work.</span>
-<span class="k">class</span> <span class="nc">KerberosAuthMixin</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
-<div class="viewcode-block" id="KerberosAuthMixin"><a class="viewcode-back" href="../Developer/sso.html#sso.KerberosAuthMixin">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="KerberosAuthMixin"><a class="viewcode-back" href="../Developer/sso.html#sso.KerberosAuthMixin">[docs]</a><span class="k">class</span> <span class="nc">KerberosAuthMixin</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Authenticates users via Kerberos-based Single Sign-On.  Requires that you</span>
 <span class="sd">    define &#39;sso_realm&#39; and &#39;sso_service&#39; in your Tornado Application settings.</span>
 <span class="sd">    For example::</span>
@@ -166,19 +173,19 @@
 <span class="sd">                else:</span>
 <span class="sd">                    self.redirect(&quot;/&quot;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<div class="viewcode-block" id="KerberosAuthMixin.initialize"><a class="viewcode-back" href="../Developer/sso.html#sso.KerberosAuthMixin.initialize">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="KerberosAuthMixin.initialize"><a class="viewcode-back" href="../Developer/sso.html#sso.KerberosAuthMixin.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print out helpful error messages if the requisite settings aren&#39;t</span>
 <span class="sd">        configured.</span>
 
 <span class="sd">        NOTE: It won&#39;t hurt anything to override this method in your</span>
 <span class="sd">        RequestHandler.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">require_setting</span><span class="p">(</span><span class="s">&quot;sso_realm&quot;</span><span class="p">,</span> <span class="s">&quot;Kerberos/GSSAPI Single Sign-On&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">require_setting</span><span class="p">(</span><span class="s">&quot;sso_service&quot;</span><span class="p">,</span> <span class="s">&quot;Kerberos/GSSAPI Single Sign-On&quot;</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">get_authenticated_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span></div>
-<div class="viewcode-block" id="KerberosAuthMixin.get_authenticated_user"><a class="viewcode-back" href="../Developer/sso.html#sso.KerberosAuthMixin.get_authenticated_user">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">require_setting</span><span class="p">(</span><span class="s">&quot;sso_realm&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Kerberos/GSSAPI Single Sign-On&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">require_setting</span><span class="p">(</span><span class="s">&quot;sso_service&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Kerberos/GSSAPI Single Sign-On&quot;</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="KerberosAuthMixin.get_authenticated_user"><a class="viewcode-back" href="../Developer/sso.html#sso.KerberosAuthMixin.get_authenticated_user">[docs]</a>    <span class="k">def</span> <span class="nf">get_authenticated_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes the client&#39;s Authorization header and calls</span>
 <span class="sd">        self.auth_negotiate() or self.auth_basic() depending on what headers</span>
 <span class="sd">        were provided by the client.</span>
@@ -188,9 +195,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">auth_negotiate</span><span class="p">(</span><span class="n">auth_header</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">auth_header</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;Basic &#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">auth_basic</span><span class="p">(</span><span class="n">auth_header</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">auth_negotiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auth_header</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span></div>
-<div class="viewcode-block" id="KerberosAuthMixin.auth_negotiate"><a class="viewcode-back" href="../Developer/sso.html#sso.KerberosAuthMixin.auth_negotiate">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+</div>
+<div class="viewcode-block" id="KerberosAuthMixin.auth_negotiate"><a class="viewcode-back" href="../Developer/sso.html#sso.KerberosAuthMixin.auth_negotiate">[docs]</a>    <span class="k">def</span> <span class="nf">auth_negotiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auth_header</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform Negotiate (GSSAPI/SSO) authentication via Kerberos.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">auth_str</span> <span class="o">=</span> <span class="n">auth_header</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
@@ -198,7 +205,7 @@
         <span class="n">result</span><span class="p">,</span> <span class="n">context</span> <span class="o">=</span> <span class="n">kerberos</span><span class="o">.</span><span class="n">authGSSServerInit</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;sso_service&#39;</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">result</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="s">&quot;Kerberos Init failed&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Kerberos Init failed&quot;</span><span class="p">))</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">kerberos</span><span class="o">.</span><span class="n">authGSSServerStep</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">auth_str</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">gssstring</span> <span class="o">=</span> <span class="n">kerberos</span><span class="o">.</span><span class="n">authGSSServerResponse</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
@@ -209,9 +216,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_header</span><span class="p">(</span><span class="s">&#39;WWW-Authenticate&#39;</span><span class="p">,</span> <span class="s">&quot;Negotiate </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">gssstring</span><span class="p">)</span>
         <span class="n">kerberos</span><span class="o">.</span><span class="n">authGSSServerClean</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
         <span class="n">callback</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">auth_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auth_header</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span></div>
-<div class="viewcode-block" id="KerberosAuthMixin.auth_basic"><a class="viewcode-back" href="../Developer/sso.html#sso.KerberosAuthMixin.auth_basic">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+</div>
+<div class="viewcode-block" id="KerberosAuthMixin.auth_basic"><a class="viewcode-back" href="../Developer/sso.html#sso.KerberosAuthMixin.auth_basic">[docs]</a>    <span class="k">def</span> <span class="nf">auth_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auth_header</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform Basic authentication using Kerberos against</span>
 <span class="sd">        self.settings[&#39;sso_realm&#39;].</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -231,9 +238,9 @@
         <span class="c">#       so we have to add it:</span>
         <span class="n">user</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">@</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;sso_realm&#39;</span><span class="p">])</span>
         <span class="n">callback</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">authenticate_redirect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
-<div class="viewcode-block" id="KerberosAuthMixin.authenticate_redirect"><a class="viewcode-back" href="../Developer/sso.html#sso.KerberosAuthMixin.authenticate_redirect">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+</div>
+<div class="viewcode-block" id="KerberosAuthMixin.authenticate_redirect"><a class="viewcode-back" href="../Developer/sso.html#sso.KerberosAuthMixin.authenticate_redirect">[docs]</a>    <span class="k">def</span> <span class="nf">authenticate_redirect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Informs the browser that this resource requires authentication (status</span>
 <span class="sd">        code 401) which should prompt the browser to reply with credentials.</span>
 
@@ -244,7 +251,7 @@
 <span class="sd">        process as close as possible to how things work in tornado.auth.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers_written</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Headers have already been written&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Headers have already been written&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s">&quot;WWW-Authenticate&quot;</span><span class="p">,</span> <span class="s">&quot;Negotiate&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span>
@@ -252,14 +259,17 @@
             <span class="s">&#39;Basic realm=&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;sso_realm&#39;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">False</span>
-</pre></div></div></div>
+        <span class="k">return</span> <span class="bp">False</span></div></div>
+</pre></div>
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/ls_logo_1inch_300dpi.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
@@ -292,7 +302,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2011, Liftoff Software Corporation.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
     </div>
   </body>
 </html>

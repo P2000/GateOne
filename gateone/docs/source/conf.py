@@ -17,6 +17,7 @@ import sys, os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath('../'))
 # Insert plugins too
 for plugin_dir in os.listdir(os.path.abspath('../../plugins')):
     sys.path.append(os.path.abspath('../../plugins/%s' % plugin_dir))
@@ -39,6 +40,7 @@ extensions = [
     #'sphinx.ext.coverage',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx',
     'sphinxcontrib.ansi', # Displays text codes as they would appear in a shell
 ]
 
@@ -98,7 +100,7 @@ add_module_names = True
 show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'manni'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -129,12 +131,12 @@ html_short_title = "Gate One Documentation"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = None
+html_logo = 'Images/ls_logo_1inch_300dpi.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-#html_favicon = None
+html_favicon = 'Images/favicon.png'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -274,3 +276,9 @@ epub_copyright = u'2011, Liftoff Software Corporation'
 
 # Allow duplicate toc entries.
 #epub_tocdup = True
+
+# -- Intersphinx stuff ---------------------------------------------------------
+intersphinx_mapping = {
+    'python': ('http://docs.python.org/2.7', None),
+    'tornado': ('http://www.tornadoweb.org/documentation/', None)
+}

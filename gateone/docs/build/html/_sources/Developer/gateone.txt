@@ -5,3 +5,4 @@
 
 .. automodule:: gateone
     :members:
+    :private-members:

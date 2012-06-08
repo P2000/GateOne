@@ -5,3 +5,4 @@
 
 .. automodule:: termio
     :members:
+    :private-members:

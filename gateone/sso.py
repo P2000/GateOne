@@ -26,7 +26,8 @@ Active Directory (Heimdal is untested but should work fine).  If you're
 experiencing trouble it is recommended that you set debug=True in your
 application settings.  This will enable printing of Kerberos exception messages.
 
-Troubleshooting:
+Troubleshooting
+---------------
 
 If your browser asks you for a password (i.e. SSO failed) there's probably
 something wrong with your Kerberos configuration on either the client or the
@@ -63,15 +64,18 @@ Class Docstrings
 """
 
 # Standard library modules
-import httplib, logging, base64
+import base64
+
+# Import our own stuff
+from utils import get_translation
+# Enable localization support
+_ = get_translation()
 
 # 3rd party modules
-import kerberos
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
-from tornado.escape import utf8
-from tornado.util import b
+import kerberos
 
 # NOTE: For some reason if I set this as just an 'object' it doesn't work.
 class KerberosAuthMixin(tornado.web.RequestHandler):
@@ -125,8 +129,8 @@ class KerberosAuthMixin(tornado.web.RequestHandler):
         NOTE: It won't hurt anything to override this method in your
         RequestHandler.
         """
-        self.require_setting("sso_realm", "Kerberos/GSSAPI Single Sign-On")
-        self.require_setting("sso_service", "Kerberos/GSSAPI Single Sign-On")
+        self.require_setting("sso_realm", _("Kerberos/GSSAPI Single Sign-On"))
+        self.require_setting("sso_service", _("Kerberos/GSSAPI Single Sign-On"))
 
     def get_authenticated_user(self, callback):
         """
@@ -149,7 +153,7 @@ class KerberosAuthMixin(tornado.web.RequestHandler):
         result, context = kerberos.authGSSServerInit(
             self.settings['sso_service'])
         if result != 1:
-            raise tornado.web.HTTPError(500, "Kerberos Init failed")
+            raise tornado.web.HTTPError(500, _("Kerberos Init failed"))
         result = kerberos.authGSSServerStep(context, auth_str)
         if result == 1:
             gssstring = kerberos.authGSSServerResponse(context)
@@ -195,7 +199,7 @@ class KerberosAuthMixin(tornado.web.RequestHandler):
         process as close as possible to how things work in tornado.auth.
         """
         if self._headers_written:
-            raise Exception('Headers have already been written')
+            raise Exception(_('Headers have already been written'))
         self.set_status(401)
         self.add_header("WWW-Authenticate", "Negotiate")
         self.add_header(

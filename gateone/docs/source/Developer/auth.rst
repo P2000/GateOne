@@ -5,3 +5,4 @@
 
 .. automodule:: auth
     :members:
+    :private-members:

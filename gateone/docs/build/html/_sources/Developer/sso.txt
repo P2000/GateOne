@@ -5,3 +5,4 @@
 
 .. automodule:: sso
     :members:
+    :private-members:

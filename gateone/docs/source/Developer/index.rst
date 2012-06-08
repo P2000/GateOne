@@ -1,15 +1,19 @@
+.. _developer-docs:
+
 Developer Documentation
 =======================
 
 Python Code
 -----------
 Gate One consists of gateone.py and several supporting Python modules and scripts.  The documentation for each can be found below:
-    
+
 .. toctree::
 
     auth.rst
+    authpam.rst
     gateone.rst
     logviewer.rst
+    remote_syslog.rst
     sso.rst
     terminal.rst
     termio.rst
@@ -42,4 +46,7 @@ Developing Plugins
 
 Embeddeding Gate One Into Other Applications
 --------------------------------------------
-.. todo:: Write documentation on embedding Gate One into other applications.  Include details on how to make it hidden until a certain keystroke is entered.
+
+.. toctree::
+
+    embedding_part1.rst
